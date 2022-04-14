@@ -8,7 +8,6 @@
 #include "functions.h"
 #include "dshot.h"
 #include "targets.h"
-#include "common.h"
 
 int dpulse[16] = {0} ;
 
@@ -34,7 +33,6 @@ int shift_amount = 0;
 uint32_t gcrnumber;
 extern int e_com_time;
 extern int zero_crosses;
-extern char send_telemetry;
 extern int smoothedinput;
 extern uint8_t max_duty_cycle_change;
 int dshot_full_number;
@@ -42,10 +40,6 @@ extern char play_tone_flag;
 uint8_t command_count = 0;
 uint8_t last_command = 0;
 uint8_t high_pin_count = 0;
-uint32_t gcr[37] =  {0};
-uint16_t dshot_frametime;
-uint16_t dshot_goodcounts;
-uint16_t dshot_badcounts;
 
 
 void computeDshotDMA(){
@@ -54,8 +48,8 @@ void computeDshotDMA(){
 int j = 0;
 dshot_frametime = dma_buffer[31]- dma_buffer[0];
 
-#if defined(MCU_F051) || defined(MCU_F031)
-	         if((dshot_frametime < 1275)&&(dshot_frametime > 1210)){
+#ifdef MCU_F051
+	         if((dshot_frametime < 1270)&&(dshot_frametime > 1210)){
 				for (int i = 0; i < 16; i++){
 					dpulse[i] = ((dma_buffer[j + (i<<1) +1] - dma_buffer[j + (i<<1)])>>5) ;
 				}
@@ -96,9 +90,6 @@ dshot_frametime = dma_buffer[31]- dma_buffer[0];
 				if(calcCRC == checkCRC){
 					signaltimeout = 0;
 					dshot_goodcounts++;
-					if(dpulse[11]==1){
-                    send_telemetry=1;
-					}
 					if (tocheck > 47){
 
 
@@ -151,12 +142,10 @@ dshot_frametime = dma_buffer[31]- dma_buffer[0];
 				    	play_tone_flag = 2;
 				    break;
 					case 9:
-						bi_direction = 0;
    					    armed = 0;
 						zero_input_count = 0;
 				    break;
 					case 10:
-						bi_direction = 1;
 						zero_input_count = 0;
 						armed = 0;
 				    break;
@@ -220,12 +209,12 @@ for (int i = 15; i >= 9 ; i--){
 		  | gcr_encode_table[(((1 << 4) - 1) & (dshot_full_number >> 4))] << 5  //3rd set of four digits
 		  | gcr_encode_table[(((1 << 4) - 1) & (dshot_full_number >> 0))];  //last four digits
 //GCR RLL encode 20 to 21bit output
-#if defined(MCU_F051) || defined(MCU_F031)
-		  gcr[1+buffer_padding] = 64;
+#ifdef MCU_F051
+		  gcr[1+7] = 64;
 		  for( int i= 19; i >= 0; i--){              // each digit in gcrnumber
-			  gcr[buffer_padding+20-i+1] = ((((gcrnumber &  1 << i )) >> i) ^ (gcr[buffer_padding+20-i]>>6)) << 6;        // exclusive ored with number before it multiplied by 64 to match output timer.
+			  gcr[7+20-i+1] = ((((gcrnumber &  1 << i )) >> i) ^ (gcr[7+20-i]>>6)) << 6;        // exclusive ored with number before it multiplied by 64 to match output timer.
 		  }
-          gcr[buffer_padding] = 0;
+          gcr[7] = 0;
 #endif
 #ifdef MCU_G071
 		  gcr[1+7] = 94;
