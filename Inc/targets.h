@@ -9,7 +9,7 @@
 //#define TMOTOR45
 //#define HGLRC
 //#define SISKIN
-#define MAMBA_F60PRO
+#define DIATONE
 //#define WRAITH32
 //#define AIKON20X20
 //#define AIKONSINGLE
