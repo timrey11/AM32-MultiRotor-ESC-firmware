@@ -7,6 +7,7 @@
 #include "phaseouts.h"
 #include "targets.h"
 
+
 extern char comp_pwm;
 extern char prop_brake_active;
 
@@ -51,13 +52,8 @@ void proportionalBrake(){  // alternate all channels between braking (ABC LOW) a
 }
 
 
-void phaseBPWM() {
-		if(!comp_pwm){            // for future
-		LL_GPIO_SetPinMode(PHASE_B_GPIO_PORT_LOW, PHASE_B_GPIO_LOW, LL_GPIO_MODE_OUTPUT);
-		PHASE_B_GPIO_PORT_LOW->LOW_BITREG_OFF = PHASE_B_GPIO_LOW;
-		}else{
-		LL_GPIO_SetPinMode(PHASE_B_GPIO_PORT_LOW, PHASE_B_GPIO_LOW, LL_GPIO_MODE_ALTERNATE); // low
-		}
+void phaseBPWM() {		
+		LL_GPIO_SetPinMode(PHASE_B_GPIO_PORT_LOW, PHASE_B_GPIO_LOW, LL_GPIO_MODE_ALTERNATE); // low		
 		LL_GPIO_SetPinMode(PHASE_B_GPIO_PORT_HIGH, PHASE_B_GPIO_HIGH, LL_GPIO_MODE_ALTERNATE);  // high
 }
 
@@ -84,14 +80,8 @@ void phaseBLOW() {
 
 
 void phaseCPWM() {
-	if (!comp_pwm){
-			LL_GPIO_SetPinMode(PHASE_C_GPIO_PORT_LOW, PHASE_C_GPIO_LOW, LL_GPIO_MODE_OUTPUT);
-			PHASE_C_GPIO_PORT_LOW->LOW_BITREG_OFF = PHASE_C_GPIO_LOW;
-		}else{
-		LL_GPIO_SetPinMode(PHASE_C_GPIO_PORT_LOW, PHASE_C_GPIO_LOW, LL_GPIO_MODE_ALTERNATE);
-		}
+		LL_GPIO_SetPinMode(PHASE_C_GPIO_PORT_LOW, PHASE_C_GPIO_LOW, LL_GPIO_MODE_ALTERNATE);		
 		LL_GPIO_SetPinMode(PHASE_C_GPIO_PORT_HIGH, PHASE_C_GPIO_HIGH, LL_GPIO_MODE_ALTERNATE);
-
 	}
 
 
@@ -117,12 +107,7 @@ void phaseCLOW() {
 ///////////////////////////////////////////////PHASE 3 /////////////////////////////////////////////////
 
 void phaseAPWM() {
-		if (!comp_pwm){
-			LL_GPIO_SetPinMode(PHASE_A_GPIO_PORT_LOW, PHASE_A_GPIO_LOW, LL_GPIO_MODE_OUTPUT);
-			PHASE_A_GPIO_PORT_LOW->LOW_BITREG_OFF = PHASE_A_GPIO_LOW;
-			}else{
-		LL_GPIO_SetPinMode(PHASE_A_GPIO_PORT_LOW, PHASE_A_GPIO_LOW, LL_GPIO_MODE_ALTERNATE);
-			}
+		LL_GPIO_SetPinMode(PHASE_A_GPIO_PORT_LOW, PHASE_A_GPIO_LOW, LL_GPIO_MODE_ALTERNATE);			
 		LL_GPIO_SetPinMode(PHASE_A_GPIO_PORT_HIGH, PHASE_A_GPIO_HIGH, LL_GPIO_MODE_ALTERNATE);
 	}
 
@@ -144,15 +129,9 @@ void phaseALOW() {
 
 //////////////////////////////////PHASE 1//////////////////////
 void phaseBPWM() {
-		if(!comp_pwm){            // for future
-		//LL_GPIO_SetPinMode(PHASE_B_GPIO_PORT_LOW, PHASE_B_GPIO_LOW, LL_GPIO_MODE_OUTPUT);
-		//PHASE_B_GPIO_PORT_LOW->LOW_BITREG_OFF = PHASE_B_GPIO_LOW;
-		}else{
 		LL_GPIO_SetPinMode(PHASE_B_GPIO_PORT_ENABLE, PHASE_B_GPIO_ENABLE, LL_GPIO_MODE_OUTPUT); // enable on
-		PHASE_B_GPIO_PORT_ENABLE->BSRR = PHASE_B_GPIO_ENABLE;
-		}
+		PHASE_B_GPIO_PORT_ENABLE->BSRR = PHASE_B_GPIO_ENABLE;		
 		LL_GPIO_SetPinMode(PHASE_B_GPIO_PORT_PWM, PHASE_B_GPIO_PWM, LL_GPIO_MODE_ALTERNATE);  // high pwm
-
 	}
 
 
@@ -178,15 +157,9 @@ void phaseBLOW() {
 
 
 void phaseCPWM() {
-	if (!comp_pwm){
-		//	LL_GPIO_SetPinMode(PHASE_C_GPIO_PORT_LOW, PHASE_C_GPIO_LOW, LL_GPIO_MODE_OUTPUT);
-			//PHASE_C_GPIO_PORT_LOW->LOW_BITREG_OFF = PHASE_C_GPIO_LOW;
-		}else{
-			LL_GPIO_SetPinMode(PHASE_C_GPIO_PORT_ENABLE, PHASE_C_GPIO_ENABLE, LL_GPIO_MODE_OUTPUT);  // enable on
-			PHASE_C_GPIO_PORT_ENABLE->BSRR = PHASE_C_GPIO_ENABLE;
-		}
+		LL_GPIO_SetPinMode(PHASE_C_GPIO_PORT_ENABLE, PHASE_C_GPIO_ENABLE, LL_GPIO_MODE_OUTPUT);  // enable on
+		PHASE_C_GPIO_PORT_ENABLE->BSRR = PHASE_C_GPIO_ENABLE;
 		LL_GPIO_SetPinMode(PHASE_C_GPIO_PORT_PWM, PHASE_C_GPIO_PWM, LL_GPIO_MODE_ALTERNATE);
-
 	}
 
 
@@ -311,17 +284,3 @@ void allpwm(){                        // for stepper_sine
 	phaseBPWM();
 	phaseCPWM();
 }
-
-#ifdef BRUSHED_MODE
-void twoChannelForward(){
-phaseAPWM();
-phaseBLOW();
-phaseCPWM();
-}
-
-void twoChannelReverse(){
-phaseALOW();
-phaseBPWM();
-phaseCLOW();
-}
-#endif
